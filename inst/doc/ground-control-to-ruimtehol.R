@@ -141,3 +141,74 @@ model <- starspace_load_model("textspace.ruimtehol")
 invisible(file.remove("textspace.ruimtehol"))
 
 
+###################################################
+### code chunk number 18: ground-control-to-ruimtehol.Rnw:260-272
+###################################################
+set.seed(321)
+dekamer <- dekamer[order(rnorm(n = nrow(dekamer))), ]
+X <- dekamer$x
+Y <- dekamer$y
+X[1:250]   <- NA
+Y[251:500] <- NA
+model <- embed_tagspace(x = X, y = Y, 
+                        early_stopping = 0.8, validationPatience = 10,
+                        dim = 50, 
+                        lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
+                        similarity = "cosine", negSearchLimit = 50,
+                        ngrams = 2, minCount = 2)
+
+
+###################################################
+### code chunk number 19: ground-control-to-ruimtehol.Rnw:295-300
+###################################################
+pretrained <- matrix(data = rnorm(1000 * 100), nrow = 1000, ncol = 100, 
+                     dimnames = list(term = sprintf("word%s", 1:1000)))
+model <- starspace(embeddings = pretrained, 
+                   similarity = "cosine", p = 0.5, ngrams = 1, trainMode = 5)
+predict(model, newdata = c("word5 word1 word5 word3"), type = "knn")
+
+
+###################################################
+### code chunk number 20: ground-control-to-ruimtehol.Rnw:306-311
+###################################################
+set.seed(321)
+model <- embed_wordspace(dekamer$x, 
+                         dim = 50, ws = 7, epoch = 5, ngrams = 2, adagrad = FALSE,
+                         margin = 0.8, negSearchLimit = 10)
+pretrained_words  <- as.matrix(model)
+
+
+###################################################
+### code chunk number 21: ground-control-to-ruimtehol.Rnw:316-324
+###################################################
+labels            <- sort(unique(unlist(dekamer$y)))
+pretrained_labels <- matrix(data = rnorm(n = length(labels) * 50, 
+                                         mean = mean(pretrained_words), 
+                                         sd = sd(pretrained_words)), 
+                            nrow = length(labels), 
+                            ncol = 50, 
+                            dimnames = list(term = sprintf("__label__%s", labels)))
+pretrained        <- rbind(pretrained_words, pretrained_labels)
+
+
+###################################################
+### code chunk number 22: ground-control-to-ruimtehol.Rnw:330-339
+###################################################
+set.seed(321)
+model <- embed_tagspace(x = dekamer$x, y = dekamer$y, 
+                        embeddings = pretrained,
+                        early_stopping = 0.8, validationPatience = 10,
+                        dim = 50, 
+                        lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
+                        similarity = "cosine", negSearchLimit = 50,
+                        ngrams = 2, minCount = 2)
+embedding <- as.matrix(model)
+
+
+###################################################
+### code chunk number 23: ground-control-to-ruimtehol.Rnw:342-344
+###################################################
+plot(model)
+starspace_knn(model, "__label__FISCALITEIT", k = 10)
+
+

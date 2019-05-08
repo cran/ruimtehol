@@ -144,8 +144,17 @@ starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat =
   if(!"embeddings" %in% names(ldots)){
     file <- path.expand(file)  
   }else{
-    file <- ""
+    if(missing(file)){
+      file <- ""
+    }
   }
+  #else{
+  #   if("embeddings_optimise" %in% names(ldots)){
+  #     file <- path.expand(file) 
+  #   }else{
+  #     file <- ""  
+  #   }
+  # }
   stopifnot(trainMode %in% 0:5 && length(trainMode) == 1)
   fileFormat <- match.arg(fileFormat)
   loss <- match.arg(loss)
@@ -503,12 +512,19 @@ starspace_load_model <- function(object, method = c("ruimtehol", "tsv-data.table
                    model$args$data, model$args$param, model$args$dictionary, model$args$options)
     arguments <- as.list(arguments)
     arguments$embeddings <- ruimte$embeddings
+    arguments$file <- NULL
+    arguments$validationFile <- NULL
     object <- do.call(starspace, arguments)
+    object$args$data$trainFile <- model$args$data$trainFile
+    object$args$data$validationFile <- model$args$data$validationFile
     object$labels <- ruimte$labels
     if(!"label_starspace" %in% colnames(object$labels)){
       object$labels$label_starspace <- as.character(sapply(object$labels$code, FUN=function(code) paste(model$args$dictionary$label, code, sep = "")))  
     }
     object$iter <- model$iter
+    for(att in setdiff(names(attributes(ruimte$object)), c("names", "class"))){
+      attr(object, which = att) <- attr(ruimte$object, which = att)
+    }
     object
   }
   class(object) <- "textspace"

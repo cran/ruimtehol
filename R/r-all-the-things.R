@@ -54,11 +54,16 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
     label <- ldots$label
   }
   if(is.list(y)){
-    targets <- sapply(y, FUN=function(x) paste(paste(label, x, sep = ""), collapse = " "))
+    targets <- sapply(y, FUN=function(x){
+      if(length(x) == 0 || all(is.na(x))){
+        return(NA_character_)
+      }
+      paste(paste(label, x, sep = ""), collapse = " ") 
+    })
   }else{
-    targets <- paste(label, y, sep = "")
+    targets <- ifelse(is.na(y), NA_character_, paste(label, y, sep = ""))
   }
-  x <- paste(targets, x)
+  x <- ifelse(is.na(targets), x, paste(targets, x, sep = " "))
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
@@ -417,32 +422,42 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", early_st
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
-#' ## Example on Freebase
+#' ## Example on Freebase - download the data
 #' filename <- paste(
 #'   "https://raw.githubusercontent.com/bnosac-dev/GraphEmbeddings/master/",
 #'   "diffbot_data/FB15k/freebase_mtr100_mte100-train.txt", 
 #'   sep = "")
-#' x <- read.delim(filename, header = FALSE, nrows = 1000,  
-#'                 col.names = c("entity_head", "relation", "entity_tail"),
-#'                 stringsAsFactors = FALSE)
-#' head(x)
+#' tmpfile <- tempfile(pattern = "freebase_mtr100_mte100_", fileext = "txt")
+#' ok <- suppressWarnings(try(
+#'   download.file(url = filename, destfile = tmpfile), 
+#'   silent = TRUE))
+#' if(!inherits(ok, "try-error") && ok == 0){
+#'   ## Build the model on the downloaded data
+#'   x <- read.delim(tmpfile, header = FALSE, nrows = 1000,  
+#'                   col.names = c("entity_head", "relation", "entity_tail"),
+#'                   stringsAsFactors = FALSE)
+#'   head(x)
 #' 
-#' set.seed(123456789)
-#' model <- embed_entityrelationspace(x, dim = 50)
-#' plot(model)
+#'   set.seed(123456789)
+#'   model <- embed_entityrelationspace(x, dim = 50)
+#'   plot(model)
 #' 
-#' predict(model, "/m/027rn /location/country/form_of_government")
+#'   predict(model, "/m/027rn /location/country/form_of_government")
 #' 
-#' ## Also add reverse relation
-#' x_reverse <- x
-#' colnames(x_reverse) <- c("entity_tail", "relation", "entity_head")
-#' x_reverse$relation <- sprintf("REVERSE_%s", x_reverse$relation)
+#'   ## Also add reverse relation
+#'   x_reverse <- x
+#'   colnames(x_reverse) <- c("entity_tail", "relation", "entity_head")
+#'   x_reverse$relation <- sprintf("REVERSE_%s", x_reverse$relation)
 #' 
-#' relations <- rbind(x, x_reverse)
-#' set.seed(123456789)
-#' model <- embed_entityrelationspace(relations, dim = 50)
-#' predict(model, "/m/027rn /location/country/form_of_government")
-#' predict(model, "/m/06cx9 REVERSE_/location/country/form_of_government")
+#'   relations <- rbind(x, x_reverse)
+#'   set.seed(123456789)
+#'   model <- embed_entityrelationspace(relations, dim = 50)
+#'   predict(model, "/m/027rn /location/country/form_of_government")
+#'   predict(model, "/m/06cx9 REVERSE_/location/country/form_of_government")
+#' }
+#' 
+#' ## cleanup for cran
+#' if(file.exists(tmpfile)) file.remove(tmpfile)
 embed_entityrelationspace <- function(x, model = "graphspace.bin", early_stopping = 0.75, ...) {
   stopifnot(early_stopping >= 0 && early_stopping <= 1)
   stopifnot(is.data.frame(x))
@@ -471,10 +486,35 @@ embed_entityrelationspace <- function(x, model = "graphspace.bin", early_stoppin
 }
 
 
-if(FALSE){
-  embed_imagespace <- function() {
-    .NotYetImplemented()
+## TODO: need better way of working with x if x is a matrix, now assuming data is already put into right format where image output is put in vector
+embed_imagespace <- function(x, y, model = "imagespace.bin", early_stopping = 0.75, useWeight=TRUE, ...) {
+  stopifnot(early_stopping >= 0 && early_stopping <= 1)
+  ldots <- list(...)
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
+  on.exit({
+    if(file.exists(filename)) file.remove(filename) 
+    if(file.exists(filename_validation)) file.remove(filename_validation)
+  })
+  label <- "__label__"
+  if("label" %in% names(ldots)){
+    label <- ldots$label
   }
+  x <- ifelse(is.na(y), x, paste(x, paste(label, y, sep = ""), sep = " "))
+  if(early_stopping < 1){
+    idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
+    writeLines(text = x[idx], con = filename)
+    writeLines(text = x[-idx], con = filename_validation)
+    starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", validationFile = filename_validation, useWeight=useWeight, ...)
+  }else{
+    writeLines(text = x, con = filename)
+    starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", useWeight=useWeight, ...)
+  }
+}
+
+
+
+if(FALSE){
   TagSpace <- embed_tagspace
   WordSpace <- embed_wordspace
   SentenceSpace <- embed_sentencespace
@@ -484,3 +524,6 @@ if(FALSE){
   GraphSpace <- embed_entityrelationspace
   ImageSpace <- embed_imagespace
 }
+
+
+
