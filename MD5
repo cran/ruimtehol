@@ -1,7 +1,7 @@
-ae964f0b9f6a47f0bd97083cf68b9d2b *DESCRIPTION
+78901c6b661916e2636c0b9553600afb *DESCRIPTION
 6b92d758308aa5d17f42fa82b79bc423 *LICENSE.note
 59d5fa903c2c6ae9a34c084b82d5ab26 *NAMESPACE
-a7daf174298b1a93ea16a5043b871706 *NEWS.md
+7765fe5943d1129256a5219fb1983445 *NEWS.md
 76e737d0a5eed7bbdc0f733655f8fbfd *R/RcppExports.R
 dab8fa6776f29ff8e0793e36580a0c4e *R/data.R
 b13805e03927bab2c13940bef9f4c0a4 *R/embed-all-the-things.R
@@ -16,7 +16,7 @@ d31f5c65959e6ccfd55566f21ce89b07 *R/utils.R
 5da609d7b1d3f02da5928977b6c8bd6a *inst/PATENTS
 58fa8ebc20d7d36818437216b2eb82f7 *inst/doc/ground-control-to-ruimtehol.R
 6974b02a2e0dd1f2ef98b434633419c7 *inst/doc/ground-control-to-ruimtehol.Rnw
-2d9bca0d7163d26da61af2ec1b66420f *inst/doc/ground-control-to-ruimtehol.pdf
+17db7d919359d6bb7fda52df1520eab3 *inst/doc/ground-control-to-ruimtehol.pdf
 d6d6678e1a53c64c2ebeced68c0339d8 *man/dekamer.Rd
 6ebb14dbdf63f90ad376b519a25f1eee *man/dekamer_theme_terminology.Rd
 5bd220a787ada2075004dc7479c8eb43 *man/embed_articlespace.Rd
@@ -35,7 +35,7 @@ d842c527532c32712d36dc6b9c65ae3f *man/starspace_dictionary.Rd
 ebec0199f56815ac56380e7da8b4e8ee *man/starspace_knn.Rd
 d9ff5668c43f5f1956935b09eac8e141 *man/starspace_load_model.Rd
 b261f8a50662722a423c36b4f164e542 *man/starspace_save_model.Rd
-f08a4473da85f0559729048fb5b6d465 *src/Makevars
+9b443c9af806f7d67e367813074b168f *src/Makevars
 6cf8288bf2a91277cf4fe48b974d98b5 *src/RcppExports.cpp
 f2df6ba02afb70f70606afb5c76c8715 *src/Starspace/examples/README.md
 4bb0e5e2c41f880e84a79911844bd39f *src/Starspace/examples/classification_ag_news.sh
