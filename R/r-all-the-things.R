@@ -65,6 +65,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
   }
   x <- ifelse(is.na(targets), x, paste(targets, x, sep = " "))
   if(early_stopping < 1){
+    ## TODO: need to check training and test data have same targets
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
     writeLines(text = x[-idx], con = filename_validation)
@@ -195,7 +196,7 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping =
   x <- sapply(x, FUN=function(tokens){
     sentences <- split(tokens, tokens$sentence_id)
     sentences <- sapply(sentences, FUN=function(x) paste(x$token, collapse = " "))
-    paste(sentences, collapse = " \t ")
+    paste(sentences, collapse = "\t")
   })
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
@@ -274,7 +275,7 @@ embed_articlespace <- function(x, model = "articlespace.bin", early_stopping = 0
   x <- sapply(x, FUN=function(tokens){
     sentences <- split(tokens, tokens$sentence_id)
     sentences <- sapply(sentences, FUN=function(x) paste(x$token, collapse = " "))
-    paste(sentences, collapse = " \t ")
+    paste(sentences, collapse = "\t")
   })
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
@@ -340,7 +341,7 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", early_sto
   }
   x <- split(x, f = x$user_id)
   x <- sapply(x, FUN=function(userdata){
-    paste(userdata$text, collapse = " \t ")
+    paste(userdata$text, collapse = "\t")
   })
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
