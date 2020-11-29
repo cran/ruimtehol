@@ -20,7 +20,7 @@ str(dekamer)
 ### code chunk number 3: ground-control-to-ruimtehol.Rnw:99-107
 ###################################################
 dekamer$x <- strsplit(dekamer$question, "\\W")
-dekamer$x <- lapply(dekamer$x, FUN = function(x) setdiff(x, ""))
+dekamer$x <- lapply(dekamer$x, FUN = function(x) x[x != ""])
 dekamer$x <- sapply(dekamer$x, FUN = function(x) paste(x, collapse = " "))
 dekamer$x <- tolower(dekamer$x)
 dekamer$y <- strsplit(dekamer$question_theme, split = ",")
@@ -32,13 +32,13 @@ dekamer$y[1:2]
 ###################################################
 ### code chunk number 4: ground-control-to-ruimtehol.Rnw:115-123
 ###################################################
-set.seed(321)
+set.seed(123456789)
 model <- embed_tagspace(x = dekamer$x, y = dekamer$y, 
                         early_stopping = 0.8, validationPatience = 10,
                         dim = 50, 
                         lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
                         similarity = "cosine", negSearchLimit = 50,
-                        ngrams = 2, minCount = 2,
+                        ngrams = 2, minCount = 2, bucket = 100000,
                         maxTrainTime = 2 * 60)
 
 
