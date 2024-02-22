@@ -1,4 +1,3 @@
-#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -34,6 +33,7 @@
 #else
 #include <unistd.h>
 #endif
+#include <Rcpp.h>
 
 int getNumberOfCores() {
 #ifdef WIN32
@@ -228,7 +228,17 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
     int i = 0;
     for (auto& idx: indices) idx = i++;
   }
-  std::random_shuffle(indices.begin(), indices.end(), randWrapper);
+  // std::random_shuffle(indices.begin(), indices.end(), randWrapper);
+  // Rcpp::IntegerVector indices_r = Rcpp::sample(numSamples, numSamples, false, R_NilValue, true) - 1;
+  // for (auto ii = 0; ii < numSamples; ii++) {
+  //   indices[ii] = indices_r[ii];
+  // }
+  // Fisher-Yates Shuffle Algorithm - https://gallery.rcpp.org/articles/stl-random-shuffle/
+  int j;
+  for (int i = 0; i < numSamples - 1; i++) {
+    j = i + randWrapper(numSamples - i);
+    std::swap(indices[i], indices[j]);
+  }
 
   // Compute word negatives
   if (args_->trainMode == 5 || args_->trainWord) {
@@ -706,7 +716,7 @@ EmbedModel::kNN(shared_ptr<SparseLinear<Real>> lookup,
     }
     for (auto r : mostSimilar) {
       if (r.first == -1 || r.second == -1.0) {
-        abort();
+        Rcpp::stop("Incorrect Starspace usage");
       }
     }
     return mostSimilar;

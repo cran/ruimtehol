@@ -1,7 +1,7 @@
 Package: ruimtehol
 Type: Package
 Title: Learn Text 'Embeddings' with 'Starspace'
-Version: 0.3.1
+Version: 0.3.2
 Maintainer: Jan Wijffels <jwijffels@bnosac.be>
 Authors@R: c(
     person('Jan', 'Wijffels', role = c('aut', 'cre', 'cph'), email = 'jwijffels@bnosac.be', comment = "R wrapper"), 
@@ -23,11 +23,10 @@ Imports: Rcpp (>= 0.11.5), utils, graphics, stats
 Suggests: udpipe, data.table
 LinkingTo: Rcpp, BH
 RoxygenNote: 7.1.2
-SystemRequirements: C++11
 NeedsCompilation: yes
-Packaged: 2023-01-06 16:11:31 UTC; jwijffels
+Packaged: 2024-02-22 22:13:52 UTC; jwijffels
 Author: Jan Wijffels [aut, cre, cph] (R wrapper),
   BNOSAC [cph] (R wrapper),
   Facebook, Inc. [cph] (Starspace (BSD licensed))
 Repository: CRAN
-Date/Publication: 2023-01-06 21:30:02 UTC
+Date/Publication: 2024-02-22 22:50:02 UTC
